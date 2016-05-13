@@ -17,13 +17,31 @@ Via Composer
 $ composer require php-soft/json-api-builder
 ```
 
+Once this has finished, you will need to add the service provider to the providers array in your app.php config as follows:
+
+``` php
+'providers' => [
+    // ...
+    Leeduc\JsonApiBuilder\JsonApiBuilderServiceProvider::class,
+]
+```
+
+Next, also in the app.php config file, under the aliases array, you may want to add facades.
+
+``` php
+'aliases' => [
+    // ...
+    'JsonApiBuilder' => Leeduc\JsonApiBuilder\Facades\JsonApiBuilder::class,
+]
+```
+
 ## Usage
 
 ``` php
 $builder = \JsonApiBuilder::setData($data)
                     ->entity(['email', 'name', 'gender'])
-                    ->relationship(['comments', 'posts'])
-                    ->included(['posts', 'comments' => ['post_id', 'content']]);
+                    ->relationship(['comments'])
+                    ->included(['comments' => ['post_id', 'content']]);
 dd($builder->parse());
 ```
 Response
