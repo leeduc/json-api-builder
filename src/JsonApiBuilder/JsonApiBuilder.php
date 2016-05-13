@@ -1,5 +1,5 @@
 <?php
-namespace PhpSoft\JsonApiBuilder\JsonApiBuilder;
+namespace Leeduc\JsonApiBuilder\JsonApiBuilder;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;

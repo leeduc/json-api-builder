@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpSoft\JsonApiBuilder;
+namespace Leeduc\JsonApiBuilder;
 
 class SkeletonClass
 {

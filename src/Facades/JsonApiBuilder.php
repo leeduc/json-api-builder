@@ -1,5 +1,5 @@
 <?php
-namespace PhpSoft\JsonApiBuilder\Facades;
+namespace Leeduc\JsonApiBuilder\Facades;
 use Illuminate\Support\Facades\Facade;
 
 class JsonApiBuilder extends Facade {
@@ -9,6 +9,6 @@ class JsonApiBuilder extends Facade {
      *
      * @return string
      */
-    protected static function getFacadeAccessor() { return 'phpsoft.jsonapibuilder'; }
+    protected static function getFacadeAccessor() { return 'leeduc.jsonapibuilder'; }
 
 }
