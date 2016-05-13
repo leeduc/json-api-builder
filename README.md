@@ -11,6 +11,7 @@ This package is auto generate data follow jsonapi.org.
 
 ## Install
 
+
 Via Composer
 
 ``` bash
