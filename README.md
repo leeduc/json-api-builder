@@ -39,7 +39,10 @@ Next, also in the app.php config file, under the aliases array, you may want to 
 
 ``` php
 $builder = \JsonApiBuilder::setData($data)
-                    ->entity(['email', 'name', 'gender'])
+                    ->entity(['email', 'name', 'gender'], function($data) {
+                        $data['id'] = 100;
+                        return $data;
+                    })
                     ->relationship(['comments'])
                     ->included(['comments' => ['post_id', 'content']]);
 dd($builder->parse());
@@ -53,7 +56,7 @@ Array
         (
             [0] => Array
                 (
-                    [id] => 1
+                    [id] => 100
                     [type] => user
                     [attributes] => Array
                         (
