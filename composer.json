@@ -1,9 +1,10 @@
 {
-    "name": "php-soft/json-api-builder",
+    "name": "leeduc/json-api-builder",
     "type": "library",
     "description": "This package is auto generate data follow jsonapi.org.",
     "keywords": [
         "PhpSoft",
+        "Leeduc",
         "JsonApiBuilder"
     ],
     "homepage": "https://github.com/leeduc/json-api-builder",
@@ -29,12 +30,12 @@
     },
     "autoload": {
         "psr-4": {
-            "PhpSoft\\JsonApiBuilder\\": "src"
+            "Leeduc\\JsonApiBuilder\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "PhpSoft\\JsonApiBuilder\\": "tests"
+            "Leeduc\\JsonApiBuilder\\": "tests"
         }
     },
     "scripts": {

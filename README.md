@@ -3,9 +3,9 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
+[![Total Downloads][ico-downloads]][link-downloads]
 <!-- [![Coverage Status][ico-scrutinizer]][link-scrutinizer] -->
 <!-- [![Quality Score][ico-code-quality]][link-code-quality] -->
-[![Total Downloads][ico-downloads]][link-downloads]
 
 This package is auto generate data follow jsonapi.org.
 

@@ -3,13 +3,13 @@ class TestCase extends Orchestra\Testbench\TestCase
 {
     protected function getPackageProviders($app)
     {
-        return array('PhpSoft\JsonApiBuilder\JsonApiBuilderServiceProvider');
+        return array('Leeduc\JsonApiBuilder\JsonApiBuilderServiceProvider');
     }
 
     protected function getPackageAliases($app)
     {
         return array(
-            'JsonApiBuilder' => 'PhpSoft\JsonApiBuilder\Facades\JsonApiBuilder'
+            'JsonApiBuilder' => 'Leeduc\JsonApiBuilder\Facades\JsonApiBuilder'
         );
     }
 

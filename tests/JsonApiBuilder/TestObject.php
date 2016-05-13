@@ -55,7 +55,7 @@ class TestObject extends TestCase
                             ->relationship(['comments', 'posts'])
                             ->included(['posts', 'comments' => ['post_id', 'content']]);
         $response = $a->parse();
-        dd($response);
+
         foreach ($response['data'] as $key => $value) {
             switch ($key) {
               case 'id':

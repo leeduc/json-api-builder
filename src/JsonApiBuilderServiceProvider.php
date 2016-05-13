@@ -1,13 +1,13 @@
 <?php
 
-namespace PhpSoft\JsonApiBuilder;
+namespace Leeduc\JsonApiBuilder;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;
 
 class JsonApiBuilderServiceProvider extends ServiceProvider
 {
-    protected $namespace = 'PhpSoft\JsonApiBuilder\Http\Controllers';
+    protected $namespace = 'Leeduc\JsonApiBuilder\Http\Controllers';
 
     /**
      * Perform post-registration booting of services.
@@ -25,8 +25,8 @@ class JsonApiBuilderServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('phpsoft.jsonapibuilder', function ($app) {
-            return new \PhpSoft\JsonApiBuilder\JsonApiBuilder\JsonApiBuilder;
+        $this->app->singleton('leeduc.jsonapibuilder', function ($app) {
+            return new \Leeduc\JsonApiBuilder\JsonApiBuilder\JsonApiBuilder;
         });
     }
 }
