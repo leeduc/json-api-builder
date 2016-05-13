@@ -1,4 +1,4 @@
-# :package_name
+# json-api-builder
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
@@ -262,17 +262,17 @@ If you discover any security related issues, please email leeduc55@gmail.com ins
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/:vendor/:package_name.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/leeduc/json-api-builder.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/leeduc/json-api-builder/master.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/:vendor/:package_name.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/:vendor/:package_name.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/:vendor/:package_name.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/leeduc/json-api-builder.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/leeduc/json-api-builder.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/leeduc/json-api-builder.svg?style=flat-square
 
-[link-packagist]: https://packagist.org/packages/:vendor/:package_name
+[link-packagist]: https://packagist.org/packages/leeduc/json-api-builder
 [link-travis]: https://travis-ci.org/leeduc/json-api-builder
-[link-scrutinizer]: https://scrutinizer-ci.com/g/:vendor/:package_name/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/:vendor/:package_name
+[link-scrutinizer]: https://scrutinizer-ci.com/g/leeduc/json-api-builder/code-structure
+[link-code-quality]: https://scrutinizer-ci.com/g/leeduc/json-api-builder
 [link-downloads]: https://packagist.org/packages/leeduc/json-api-builder
 [link-author]: https://github.com/leeduc
 [link-contributors]: ../../contributors
