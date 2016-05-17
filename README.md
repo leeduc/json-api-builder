@@ -15,7 +15,7 @@ This package is auto generate data follow jsonapi.org.
 Via Composer
 
 ``` bash
-$ composer require php-soft/json-api-builder
+$ composer require leeduc/json-api-builder
 ```
 
 Once this has finished, you will need to add the service provider to the providers array in your app.php config as follows:
