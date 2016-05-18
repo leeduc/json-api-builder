@@ -1,9 +1,10 @@
-# json-api-builder
+# Json Api Builder
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
 [![Total Downloads][ico-downloads]][link-downloads]
+[![Coverage Status][ico-coverall]][link-coverrall]
 <!-- [![Coverage Status][ico-scrutinizer]][link-scrutinizer] -->
 <!-- [![Quality Score][ico-code-quality]][link-code-quality] -->
 
@@ -289,6 +290,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/leeduc/json-api-builder.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/leeduc/json-api-builder.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/leeduc/json-api-builder.svg?style=flat-square
+[ico-coverall]: https://img.shields.io/coveralls/leeduc/json-api-builder/badge.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/leeduc/json-api-builder
 [link-travis]: https://travis-ci.org/leeduc/json-api-builder
@@ -297,3 +299,4 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-downloads]: https://packagist.org/packages/leeduc/json-api-builder
 [link-author]: https://github.com/leeduc
 [link-contributors]: ../../contributors
+[link-coverrall]: https://coveralls.io/github/leeduc/json-api-builder?branch=master

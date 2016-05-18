@@ -16,6 +16,18 @@ class TestCase extends Orchestra\Testbench\TestCase
     public function setUp()
     {
         parent::setUp();
+
+        Route::get('user/{id}', ['as' => 'stdclass', function ($id) {
+            return $id;
+        }]);
+
+        Route::get('comment/{id}', ['as' => 'comments', function ($id) {
+            return $id;
+        }]);
+
+        Route::get('comment/{id}', ['as' => 'posts', function ($id) {
+            return $id;
+        }]);
     }
 
     public function testExample()
