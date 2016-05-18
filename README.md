@@ -290,7 +290,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/leeduc/json-api-builder.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/leeduc/json-api-builder.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/leeduc/json-api-builder.svg?style=flat-square
-[ico-coverall]: https://img.shields.io/coveralls/leeduc/json-api-builder/badge.svg?style=flat-square
+[ico-coverall]: https://img.shields.io/coveralls/leeduc/json-api-builder.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/leeduc/json-api-builder
 [link-travis]: https://travis-ci.org/leeduc/json-api-builder
