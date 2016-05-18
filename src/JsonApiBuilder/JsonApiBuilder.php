@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 
 class JsonApiBuilder
 {
-    public $layout = 'JsonApiBuilder::default';
-
     private $data = [];
     private $source = [];
 
