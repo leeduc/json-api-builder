@@ -131,14 +131,14 @@ class TestObject extends TestCase
     {
         $data = self::$objects;
         $a = \JsonApiBuilder::setData($data['user'])
-                            ->entity(['email', 'name', 'gender'], function($data) {
+                            ->entity(['email', 'name', 'gender'], function ($data) {
                                 $data[0]['id'] = 100;
                                 return $data;
                             })
                             ->relationship(['comments', 'posts'])
-                            ->included(['posts', 'comments'], function($data) {
+                            ->included(['posts', 'comments'], function ($data) {
                                 foreach ($data as $key => $value) {
-                                    if($value['type'] == 'comments') {
+                                    if ($value['type'] == 'comments') {
                                         $data[$key]['attributes']['id'] = 100;
                                     }
                                 }
@@ -195,10 +195,10 @@ class TestObject extends TestCase
                     break;
                   case 'attributes':
                     foreach ($value as $k1 => $v1) {
-                        if($v['type'] == 'comments' && $k1 == 'id') {
-                          $this->assertEquals($v1, 100);
+                        if ($v['type'] == 'comments' && $k1 == 'id') {
+                            $this->assertEquals($v1, 100);
                         } else {
-                          $this->assertEquals($v1, $resource[$k1]);
+                            $this->assertEquals($v1, $resource[$k1]);
                         }
                     }
                     break;
@@ -218,7 +218,7 @@ class TestObject extends TestCase
 
         foreach ($response['data'] as $key => $resource) {
             foreach ($resource as $key => $value) {
-              switch ($key) {
+                switch ($key) {
                 case 'id':
                 $this->assertEquals($value, $data['user']->id);
                 break;
@@ -227,19 +227,19 @@ class TestObject extends TestCase
                 break;
                 case 'attributes':
                 foreach ($value as $k => $v) {
-                  $this->assertEquals($v, $data['user']->$k);
+                    $this->assertEquals($v, $data['user']->$k);
                 }
                 break;
                 case 'relationships':
                 foreach ($value as $k => $v) {
-                  foreach ($v['data'] as $k1 => $v1) {
-                    $rel = $data['user']->$k;
-                    foreach ($rel as $k2 => $v2) {
-                      $rel[$k2] = (array) $v2;
-                    }
+                    foreach ($v['data'] as $k1 => $v1) {
+                        $rel = $data['user']->$k;
+                        foreach ($rel as $k2 => $v2) {
+                            $rel[$k2] = (array) $v2;
+                        }
 
-                    $this->assertTrue(array_search($v1['id'], array_column($rel, 'id')) !== false);
-                  }
+                        $this->assertTrue(array_search($v1['id'], array_column($rel, 'id')) !== false);
+                    }
                 }
                 break;
               }
@@ -277,6 +277,44 @@ class TestObject extends TestCase
         }
     }
 }
+
+class User
+{
+    public $id;
+    public $name;
+    public $gender;
+    public $email;
+    public $password;
+
+    public function __call($method, $args)
+    {
+        if (isset($this->$method)) {
+            $func = $this->$method;
+            return call_user_func_array($func, $args);
+        }
+    }
+
+    public function toArray()
+    {
+        return [
+          'id' => $this->id,
+          'user_id' => $this->user_id,
+          'title' => $this->title,
+          'content' => $this->content
+        ];
+    }
+
+    public function previousPageUrl()
+    {
+        return 'example.com/previous';
+    }
+
+    public function nextPageUrl()
+    {
+        return 'example.com/next';
+    }
+}
+
 
 class Posts
 {
