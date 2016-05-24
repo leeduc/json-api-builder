@@ -4,21 +4,31 @@ namespace Leeduc\JsonApiBuilder\JsonApiBuilder;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 
-class JsonApiBuilder
+class Generate
 {
     private $data = [];
     private $source = [];
+    private $request;
 
     private $view = false;
 
-    public function __construct($source = [])
+    public function __construct(Request $request)
     {
-        $this->source = $source;
+        $this->request = $request;
     }
 
     public function __get($source)
     {
         return $this->data[$source];
+    }
+
+    public function json($data = [])
+    {
+        if ($data) {
+            $this->data = $data;
+        }
+
+        return new Parse($this->request, $this->data, $this->source);
     }
 
     public function setData($source)

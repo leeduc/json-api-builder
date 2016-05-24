@@ -17,6 +17,11 @@ class TestCase extends Orchestra\Testbench\TestCase
     {
         parent::setUp();
 
+        Route::get('test', function () {
+            echo \JsonApiBuilder::json()->pagination(['next' => 123213, 'custom' => 'abc'])->meta(['version' => '1.0'])->response();
+            die;
+        });
+
         Route::get('user/{id}', ['as' => 'stdclass', function ($id) {
             return $id;
         }]);
