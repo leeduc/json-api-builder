@@ -1,10 +1,10 @@
 # Json Api Builder
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
-[![Software License][ico-license]](LICENSE.md)
 [![Build Status][ico-travis]][link-travis]
-[![Total Downloads][ico-downloads]][link-downloads]
 [![Coverage Status][ico-coverall]][link-coverrall]
+[![Total Downloads][ico-downloads]][link-downloads]
+[![Software License][ico-license]](LICENSE.md)
 <!-- [![Coverage Status][ico-scrutinizer]][link-scrutinizer] -->
 <!-- [![Quality Score][ico-code-quality]][link-code-quality] -->
 
