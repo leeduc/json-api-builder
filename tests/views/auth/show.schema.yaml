@@ -1,0 +1,8 @@
+id: id
+type: user
+attributes:
+  name: name
+  email: email
+relationships:
+  posts: partial:posts.show
+  comments: partial:comments.show

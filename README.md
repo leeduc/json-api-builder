@@ -12,6 +12,7 @@ This package is auto generate data follow jsonapi.org.
 
 ## Install
 
+
 Via Composer
 
 ``` bash
@@ -38,11 +39,25 @@ Next, also in the app.php config file, under the aliases array, you may want to 
 
 ## Usage
 
+Build Schema in folder views of resource
+
+`posts.view` = `app\resources\views\posts\show.schema.yaml`
+
+``` yaml
+id: id
+type: post
+attributes:
+  title: title
+  content: content
+relationships:
+  comments: partial:comments.show
+```
+
 Build Array
 
 ``` php
 $builder = \JsonApiBuilder::setData($data)
-                    ->entity(['email', 'name', 'gender'], function($data) {
+                    ->entity('view.path.name', function($data) {
                         $data['id'] = 100;
                         return $data;
                     })
@@ -56,12 +71,32 @@ Build Json
 
 ``` php
 $builder = \JsonApiBuilder::setData($data)
-                    ->entity(['email', 'name', 'gender'], function($data) {
+                    ->entity([
+                        'id' => 'id',
+                        'type' => 'type',
+                        'attributes' => [
+                            'name' => 'name'
+                            'email' => 'email'
+                        ],
+                        'relationships' => [
+                            'posts' => 'partial:posts.show',
+                            'profile' => [
+                              'id' => 'id',
+                              'type' => 'profile',
+                              'attributes' => [
+                                  'address' => 'address',
+                                  'city' => 'city',
+                                  'phone' => 'phone',
+                                  'country' => 'country'
+                              ]
+                            ]
+                        ]
+                    ], function($data) {
                         $data['id'] = 100;
                         return $data;
                     })
                     ->relationship(['comments'])
-                    ->included(['comments' => ['post_id', 'content']])
+                    ->included(['comments'])
                     ->json()
                     ->meta([
                       'version' => '1.0'
@@ -73,7 +108,7 @@ $builder = \JsonApiBuilder::setData($data)
                     ->response();
 
 dd($builder); // Class Symfony\Component\HttpFoundation\Response
-dd(builder->getContent()); // Get Json
+dd($builder->getContent()); // Get Json
 ```
 
 

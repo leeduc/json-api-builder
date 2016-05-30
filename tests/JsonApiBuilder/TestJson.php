@@ -42,7 +42,7 @@ class TestJson extends TestCase
     {
         $data = self::$objects;
         $a = \JsonApiBuilder::setData($data['user'])
-                      ->entity(['email', 'name', 'gender'])
+                      ->entity('auth.show')
                       ->parse();
         $b = \JsonApiBuilder::json($a)
                             ->response();
@@ -56,9 +56,10 @@ class TestJson extends TestCase
     public function testParse()
     {
         $data = self::$objects;
+        $relationships = ['comments', 'posts'];
         $a = \JsonApiBuilder::setData($data['user'])
-                          ->entity(['email', 'name', 'gender'])
-                          ->relationship(['comments', 'posts'])
+                          ->entity('auth.show')
+                          ->relationships($relationships)
                           ->included(['posts', 'comments' => ['post_id', 'content']])
                           ->json()
                           ->response();
@@ -92,38 +93,44 @@ class TestJson extends TestCase
               }
               break;
             }
-          }
+            }
         }
 
 
-        foreach ($a['included'] as $k => $v) {
-            $type = $v['type'];
-            $resources = [];
-            if (isset($data['user']->$type)) {
-                foreach ($data['user']->$type as $key => $value) {
-                    $resources[] = (array) $value;
+        foreach ($relationships as $ele) {
+            foreach ($a['included'] as $k => $v) {
+                $type = $v['type'];
+                $resources = [];
+
+                if (strpos($ele, $type) === false) {
+                    continue;
+                }
+
+                if (isset($data['user']->$ele)) {
+                    foreach ($data['user']->$ele as $key => $value) {
+                        $resources[] = (array) $value;
+                    }
+                }
+
+                $list_ids = array_column($resources, 'id');
+                foreach ($v as $key => $value) {
+                    $resource = $resources[array_search($v['id'], $list_ids)];
+
+                    switch ($key) {
+                case 'id':
+                  $this->assertEquals($value, $resource['id']);
+                  break;
+                case 'type':
+                  $this->assertEquals($value, $type);
+                  break;
+                case 'attributes':
+                  foreach ($value as $k1 => $v1) {
+                      $this->assertEquals($v1, $resource[$k1]);
+                  }
+                  break;
+              }
                 }
             }
-
-            $list_ids = array_column($resources, 'id');
-
-            foreach ($v as $key => $value) {
-                $resource = $resources[array_search($v['id'], $list_ids)];
-
-                switch ($key) {
-              case 'id':
-                $this->assertEquals($value, $resource['id']);
-                break;
-              case 'type':
-                $this->assertEquals($value, $type);
-                break;
-              case 'attributes':
-                foreach ($value as $k1 => $v1) {
-                    $this->assertEquals($v1, $resource[$k1]);
-                }
-                break;
-            }
-          }
         }
     }
 
@@ -132,16 +139,11 @@ class TestJson extends TestCase
         $data = self::$objects;
 
         $a = \JsonApiBuilder::setData($data['user'])
-                      ->entity(['email', 'name', 'gender'])
+                      ->entity('auth.show')
                       ->json()
                       ->pagination()
                       ->response();
 
-        // if ($a->content()) {
-        //     $this->assertTrue(true);
-        // } else {
-        //     $this->assertTrue(false);
-        // }
         $a = json_decode($a->content(), true);
 
         foreach ($a['data'] as $resource) {
@@ -171,28 +173,29 @@ class TestJson extends TestCase
               }
               break;
             }
-          }
+            }
         }
     }
 
     public function testPaginationPassCheck()
     {
         $data = self::$objects;
-
+        $relationships = ['comments', 'posts'];
         $a = \JsonApiBuilder::setData([$data['user']])
-                            ->entity(['email', 'name', 'gender'])
-                            ->relationship(['comments', 'posts'])
+                            ->entity('auth.show')
+                            ->relationships($relationships)
                             ->included(['posts', 'comments' => ['post_id', 'content']]);
         $response = $a->parse();
 
-        $parse = \Mockery::mock('Leeduc\JsonApiBuilder\JsonApiBuilder\Parse[checkPaginationObject]', [$this->app->request, $response, $a->getData()]);
+        $parse = \Mockery::mock('Leeduc\JsonApiBuilder\JsonApiBuilder\Parse[checkPaginationObject]', [$this->app->request, $this->app->view, $response, $a->getData()]);
         $parse->shouldReceive('checkPaginationObject')->andReturn(true);
 
         \JsonApiBuilder::shouldReceive('json')->andReturn($parse);
+        \JsonApiBuilder::shouldReceive('getPath')->andReturn(__DIR__ . '/../views/auth/show.schema.yaml');
         \JsonApiBuilder::getFacadeRoot()->makePartial();
 
         $a = \JsonApiBuilder::setData($data['user'])
-                      ->entity(['email', 'name', 'gender'])
+                      ->entity('auth.show')
                       ->json()
                       ->pagination()
                       ->response();
@@ -215,49 +218,55 @@ class TestJson extends TestCase
               break;
             case 'relationships':
               foreach ($value as $k => $v) {
-                  foreach ($v['data'] as $k1 => $v1) {
-                      $rel = $data['user']->$k;
-                      foreach ($rel as $k2 => $v2) {
-                          $rel[$k2] = (array) $v2;
-                      }
+                    foreach ($v['data'] as $k1 => $v1) {
+                        $rel = $data['user']->$k;
+                        foreach ($rel as $k2 => $v2) {
+                            $rel[$k2] = (array) $v2;
+                        }
 
-                      $this->assertTrue(array_search($v1['id'], array_column($rel, 'id')) !== false);
-                  }
+                        $this->assertTrue(array_search($v1['id'], array_column($rel, 'id')) !== false);
+                    }
+                }
+                break;
               }
-              break;
             }
-          }
         }
 
 
-        foreach ($a['included'] as $k => $v) {
-            $type = $v['type'];
-            $resources = [];
-            if (isset($data['user']->$type)) {
-                foreach ($data['user']->$type as $key => $value) {
-                    $resources[] = (array) $value;
+        foreach ($relationships as $ele) {
+            foreach ($a['included'] as $k => $v) {
+                $type = $v['type'];
+                $resources = [];
+
+                if (strpos($ele, $type) === false) {
+                    continue;
+                }
+
+                if (isset($data['user']->$ele)) {
+                    foreach ($data['user']->$ele as $key => $value) {
+                        $resources[] = (array) $value;
+                    }
+                }
+
+                $list_ids = array_column($resources, 'id');
+                foreach ($v as $key => $value) {
+                    $resource = $resources[array_search($v['id'], $list_ids)];
+
+                    switch ($key) {
+                case 'id':
+                  $this->assertEquals($value, $resource['id']);
+                  break;
+                case 'type':
+                  $this->assertEquals($value, $type);
+                  break;
+                case 'attributes':
+                  foreach ($value as $k1 => $v1) {
+                      $this->assertEquals($v1, $resource[$k1]);
+                  }
+                  break;
+              }
                 }
             }
-
-            $list_ids = array_column($resources, 'id');
-
-            foreach ($v as $key => $value) {
-                $resource = $resources[array_search($v['id'], $list_ids)];
-
-                switch ($key) {
-              case 'id':
-                $this->assertEquals($value, $resource['id']);
-                break;
-              case 'type':
-                $this->assertEquals($value, $type);
-                break;
-              case 'attributes':
-                foreach ($value as $k1 => $v1) {
-                    $this->assertEquals($v1, $resource[$k1]);
-                }
-                break;
-            }
-          }
         }
     }
 

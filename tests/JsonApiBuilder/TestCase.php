@@ -16,13 +16,13 @@ class TestCase extends Orchestra\Testbench\TestCase
     public function setUp()
     {
         parent::setUp();
-
+        View::addLocation(__DIR__ . '/../views');
         Route::get('test', function () {
             echo \JsonApiBuilder::json()->pagination(['next' => 123213, 'custom' => 'abc'])->meta(['version' => '1.0'])->response();
             die;
         });
 
-        Route::get('user/{id}', ['as' => 'stdclass', function ($id) {
+        Route::get('user/{id}', ['as' => 'user', function ($id) {
             return $id;
         }]);
 
