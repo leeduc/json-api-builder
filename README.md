@@ -42,13 +42,13 @@ Build Schema in folder views of resource
 
 `posts.view` = `app\resources\views\posts\show.schema.yaml`
 
-```
+``` yaml
 id: id
 type: post
 attributes:
   title: title
   content: content
-relationships
+relationships:
   comments: partial:comments.show
 ```
 
