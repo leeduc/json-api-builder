@@ -2,20 +2,21 @@
 
 All Notable changes to `json-api-builder` will be documented in this file.
 
-## [0.0.1] 2016-05-13
+## [Unreleased] 2016-05-30
+### Add
+- Support schema in views of resource, yaml syntax
+
+## [0.1.2] 2016-05-24
+### Add
+- Add function for parse json.
+- Add meta, pagination fields
+
+
+## 0.1.1 2016-05-13
 ### Add
 - Add function for parse array.
 - Support callback override data.
 - Choose field for attributes, relationships, included.
 
-### Deprecated
-- Nothing
-
-### Fixed
-- Nothing
-
-### Removed
-- Nothing
-
-### Security
-- Nothing
+[Unreleased]: https://github.com/leeduc/json-api-builder/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/leeduc/json-api-builder/compare/v0.1.1...v0.1.2

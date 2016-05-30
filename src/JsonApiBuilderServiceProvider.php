@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\App;
 
 class JsonApiBuilderServiceProvider extends ServiceProvider
 {
+    protected $events;
     /**
      * Perform post-registration booting of services.
      *
@@ -24,7 +25,7 @@ class JsonApiBuilderServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('leeduc.jsonapibuilder', function ($app) {
-            return new \Leeduc\JsonApiBuilder\JsonApiBuilder\Generate($app->request);
+            return new \Leeduc\JsonApiBuilder\JsonApiBuilder\Generate($app->request, $app->view);
         });
     }
 }

@@ -1,0 +1,8 @@
+id: id
+type: comment
+attributes:
+  post_id: post_id
+  user_id: user_id
+  content: content
+relationships:
+  user: partial:auth.show
