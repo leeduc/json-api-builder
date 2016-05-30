@@ -191,7 +191,7 @@ class TestJson extends TestCase
         $parse->shouldReceive('checkPaginationObject')->andReturn(true);
 
         \JsonApiBuilder::shouldReceive('json')->andReturn($parse);
-        \JsonApiBuilder::shouldReceive('getPath')->andReturn('/home/vagrant/Code/laravel5/test/packages/json-api-builder/tests/JsonApiBuilder/../views/auth/show.schema.yaml');
+        \JsonApiBuilder::shouldReceive('getPath')->andReturn(__DIR__ . '/../views/auth/show.schema.yaml');
         \JsonApiBuilder::getFacadeRoot()->makePartial();
 
         $a = \JsonApiBuilder::setData($data['user'])
