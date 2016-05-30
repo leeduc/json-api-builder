@@ -3,6 +3,7 @@ namespace Leeduc\JsonApiBuilder\JsonApiBuilder;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
+use Illuminate\View\Factory;
 use Symfony\Component\HttpFoundation\Response;
 
 class Parse extends Response
@@ -11,11 +12,15 @@ class Parse extends Response
     private $sources;
     private $request;
 
-    public function __construct(Request $request, array $data, $sources = [])
+    private $finder;
+    private $factory;
+    public function __construct(Request $request, Factory $factory, array $data, $sources = [])
     {
         $this->request = $request;
         $this->data = $data;
         $this->sources = $sources;
+        $this->factory = $factory;
+        $this->finder = $factory->getFinder();
     }
 
     public function response()
