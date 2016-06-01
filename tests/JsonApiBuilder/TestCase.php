@@ -22,15 +22,15 @@ class TestCase extends Orchestra\Testbench\TestCase
             die;
         });
 
-        Route::get('user/{id}', ['as' => 'user', function ($id) {
+        Route::get('user/{id}', ['as' => 'get_user', function ($id) {
             return $id;
         }]);
 
-        Route::get('comment/{id}', ['as' => 'comments', function ($id) {
+        Route::get('comment/{id}', ['as' => 'get_comment', function ($id) {
             return $id;
         }]);
 
-        Route::get('comment/{id}', ['as' => 'posts', function ($id) {
+        Route::get('comment/{id}', ['as' => 'get_post', function ($id) {
             return $id;
         }]);
     }
