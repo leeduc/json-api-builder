@@ -45,17 +45,31 @@ Build Schema in folder views of resource
 
 ``` yaml
 id: id
-type: post
+type: user
 attributes:
-  title: title
-  content: content
+  name: name
+  email: email
 relationships:
-  comments: partial:comments.show
+  posts:
+    partial: posts.show # Yaml view path
+    links:
+      self: get_user # Route name
+      related: get_user # Route name
+  comments:
+    partial: comments.show # Yaml view path
+    links:
+      self: get_user # Route name
+      related: get_user # Route name
+links:
+  self: get_user # Route name
 ```
 
 Build Array
 
 ``` php
+$data = $users = User::with('comments')->paginate(10); // List
+$data = $users = User::with('comments')->first(); // Object
+
 $builder = \JsonApiBuilder::setData($data)
                     ->entity('view.path.name', function($data) {
                         $data['id'] = 100;
@@ -79,16 +93,28 @@ $builder = \JsonApiBuilder::setData($data)
                             'email' => 'email'
                         ],
                         'relationships' => [
-                            'posts' => 'partial:posts.show',
+                            'posts' => [
+                              'partial' => 'posts.show',
+                              'links' => [
+                                'self' => 'route_name',
+                                'related' => 'route_name'
+                              ],
+                            ],
                             'profile' => [
-                              'id' => 'id',
-                              'type' => 'profile',
-                              'attributes' => [
-                                  'address' => 'address',
-                                  'city' => 'city',
-                                  'phone' => 'phone',
-                                  'country' => 'country'
-                              ]
+                              'partial' => [
+                                'id' => 'id',
+                                'type' => 'profile',
+                                'attributes' => [
+                                    'address' => 'address',
+                                    'city' => 'city',
+                                    'phone' => 'phone',
+                                    'country' => 'country'
+                                ]
+                              ],
+                              'links' => [
+                                'self' => 'route_name',
+                                'related' => 'route_name'
+                              ],
                             ]
                         ]
                     ], function($data) {
@@ -97,7 +123,7 @@ $builder = \JsonApiBuilder::setData($data)
                     })
                     ->relationship(['comments'])
                     ->included(['comments'])
-                    ->json()
+                    ->json(['version' => '1.0'])
                     ->meta([
                       'version' => '1.0'
                     ])
@@ -111,6 +137,97 @@ dd($builder); // Class Symfony\Component\HttpFoundation\Response
 dd($builder->getContent()); // Get Json
 ```
 
+Json response
+``` json
+{
+  "data": [
+    {
+      "id": 1,
+      "type": "user",
+      "attributes": {
+        "name": "Pj2EHmiLOH",
+        "email": "Tqxfq6aZDk@gmail.com"
+      },
+      "links": {
+        "self": "http://example.com/user\/1"
+      },
+      "relationships": {
+        "comments": {
+          "data": [
+            {
+              "id": 2,
+              "type": "comment"
+            },
+            {
+              "id": 8,
+              "type": "comment"
+            }
+          ],
+          "links": {
+            "self": "http://example.com/user\/1\/relationships\/comments",
+            "related": "http://example.com/user\/1\/comments"
+          }
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "id": 2,
+      "type": "comment",
+      "attributes": {
+        "post_id": "3",
+        "user_id": "1",
+        "content": "UHXLbmJxySxiTTYdjzR539bNXjohgpCVj0WfwvmZWKUonhUipxJeHPh0AtTWqIZpzLZfixawJJEQwqILf93Co5edPOrKDfaqvkSQ"
+      },
+      "relationships": {
+        "user": {
+          "data": [
+            {
+              "id": 1,
+              "type": "user"
+            }
+          ],
+          "links": {
+            "self": "http://example.com/comment\/2\/relationships\/user"
+          }
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "comment",
+      "attributes": {
+        "post_id": "2",
+        "user_id": "1",
+        "content": "Y8kDX5EOQFtqoy4171bGFVNrvYgMRr9UVHQvD7Eed43YgzeZ1KFJipTFCMJVu6rtb4V8Fm14mv2t3aN26CRNgiOqDsGiMPbQyVJF"
+      },
+      "relationships": {
+        "user": {
+          "data": [
+            {
+              "id": 1,
+              "type": "user"
+            }
+          ],
+          "links": {
+            "self": "http://example.com/comment\/8\/relationships\/user"
+          }
+        }
+      }
+    }
+  ],
+  "jsonapi": {
+    "version": "1.0"
+  },
+  "links": {
+    "self": "http://example.com/test",
+    "first": "http://example.com/test?page%5Bsize%5D=1&page%5Bnumber%5D=1",
+    "next": "http://example.com/test?page%5Bsize%5D=1&page%5Bnumber%5D=2",
+    "last": "http://example.com/test?page%5Bsize%5D=1&page%5Bnumber%5D=40"
+  }
+}
+```
 
 ## Change log
 

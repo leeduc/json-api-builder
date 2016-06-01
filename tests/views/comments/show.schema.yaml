@@ -5,4 +5,8 @@ attributes:
   user_id: user_id
   content: content
 relationships:
-  user: partial:auth.show
+  user:
+    partial: auth.show
+    links:
+      self: get_comment
+      related: get_comment

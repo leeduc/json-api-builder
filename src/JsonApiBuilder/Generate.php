@@ -14,7 +14,6 @@ class Generate
     private $request;
 
     private $view = false;
-    private $view_path;
     private $relationships = [];
 
     private $generate;
@@ -33,13 +32,9 @@ class Generate
         return $this->data[$source];
     }
 
-    public function json($data = [])
+    public function json($meta = [])
     {
-        if ($data) {
-            $this->data = $data;
-        }
-
-        return new Parse($this->request, $this->factory, $this->data, $this->source);
+        return new Parse($this->request, $this->factory, $this->data, $this->source, $meta);
     }
 
     public function setData($source)
@@ -75,12 +70,7 @@ class Generate
 
         if (isset($fields['relationships']) && is_array($fields['relationships'])) {
             foreach ($fields['relationships'] as $key => $value) {
-                if(is_array($value)) {
-                    $this->relationships[$key] = $value;
-                    continue;
-                }
-
-                $this->relationships[$key] = $this->parsePartial($value);
+                $this->relationships[$key] = $value;
             }
         }
 
@@ -98,10 +88,14 @@ class Generate
                 $data[$k]['attributes'] = $element->getAttributes();
             }
 
-            if (\Route::has($type)) {
-                $data[$k]['links'] = [
-                    'self' => route($type, ['id' => $data[$k]['id']])
-                ];
+            if (isset($fields['links'])) {
+                $route = $fields['links']['self'];
+
+                if (\Route::has($route)) {
+                    $data[$k]['links'] = [
+                      'self' => route($route, ['id' => $data[$k]['id']])
+                  ];
+                }
             }
         }
 
@@ -122,18 +116,26 @@ class Generate
 
         foreach ($this->source as $k => $element) {
             $origin_type = strtolower(class_basename($element));
+
+
             foreach ($objects as $field) {
                 if (!isset($relationships[$field])) {
                     throw new \Exception("Relationship [$field] does not exists.", 500);
                 }
 
-                $type = isset($relationships[$field]['type']) ? $relationships[$field]['type'] : strtolower($field);
+                $partial = $relationships[$field]['partial'];
+
+                if (is_string($relationships[$field]['partial'])) {
+                    $partial = $this->parsePartial($relationships[$field]['partial']);
+                }
+
+                $type = isset($partial['type']) ? $partial['type'] : strtolower($field);
 
                 if ((isset($element->$field) || method_exists($element, $field)) && (is_object($element->$field) || is_array($element->$field))) {
                     if ($element->$field instanceof \Illuminate\Database\Eloquent\Collection ||
                         is_array($element->$field)) {
                         foreach ($element->$field as $key => $value) {
-                            $id = isset($relationships[$field]['id']) ? $value->$relationships[$field]['id'] : $value->id;
+                            $id = isset($partial['id']) ? $value->$partial['id'] : $value->id;
                             $this->data['data'][$k]['relationships'][$field]['data'][$key] = [
                             'id' => $id,
                             'type' => $type
@@ -141,18 +143,22 @@ class Generate
                         }
                     } else {
                         $value = $element->$field;
-                        $id = isset($relationships[$field]['id']) ? $value->$relationships[$field]['id'] : $value->id;
+                        $id = isset($partial['id']) ? $value->$partial['id'] : $value->id;
                         $this->data['data'][$k]['relationships'][$field]['data'][] = [
                             'id' => $id,
                             'type' => $type
                         ];
                     }
 
-                    if (\Route::has($origin_type) && !$ele) {
-                        $this->data['data'][$k]['relationships'][$field]['links'] = [
-                        'self' => route($origin_type, ['id' => $this->data['data'][$k]['id']]) . '/relationships/' . $field,
-                        'related' => route($origin_type, ['id' => $this->data['data'][$k]['id']]) . '/' . $field
-                      ];
+                    if (isset($relationships[$field]['links'])) {
+                        $links = $relationships[$field]['links'];
+                        if (isset($links['self']) && \Route::has($links['self'])) {
+                            $this->data['data'][$k]['relationships'][$field]['links']['self'] = route($links['self'], ['id' => $this->data['data'][$k]['id']]) . '/relationships/' . $field;
+                        }
+
+                        if (isset($links['related']) && \Route::has($links['related']) && !$ele) {
+                            $this->data['data'][$k]['relationships'][$field]['links']['related'] = route($links['related'], ['id' => $this->data['data'][$k]['id']]) . '/' . $field;
+                        }
                     }
                 }
             }
@@ -166,7 +172,6 @@ class Generate
         $include_data = [];
         $relationships = $this->relationships;
         foreach ($this->source as $k => $element) {
-            // $origin_type = strtolower(class_basename($element));
             foreach ($objects as $relationship => $opts) {
                 if (is_numeric($relationship)) {
                     $relationship = $opts;
@@ -176,11 +181,14 @@ class Generate
                     throw new \Exception("Included [$relationship] data does not exists.", 500);
                 }
 
-                $resource = $relationships[$relationship];
+                $resource = $relationships[$relationship]['partial'];
+
+                if (is_string($relationships[$relationship]['partial'])) {
+                    $resource = $this->getSchema($relationships[$relationship]['partial']);
+                }
 
                 if (isset($element->$relationship) && (is_object($element->$relationship) || is_array($element->$relationship))) {
                     foreach ($element->$relationship as $key => $value) {
-                        // $type = strtolower(class_basename($value));
                         if (!$this->generate) {
                             $this->generate = new Generate($this->request, $this->factory);
                         }
@@ -196,7 +204,7 @@ class Generate
                             }
                         }
 
-                        $this->generate->relationships($list_rls);
+                        $this->generate->relationships($list_rls, true);
 
                         $data = $this->generate->parse();
 
@@ -286,10 +294,6 @@ class Generate
 
     protected function parsePartial($partial)
     {
-        if (is_string($partial) && strpos($partial, 'partial:') !== false) {
-            return $this->getSchema(str_replace('partial:', '', $partial));
-        }
-
-        return [];
+        return $this->getSchema($partial);
     }
 }
