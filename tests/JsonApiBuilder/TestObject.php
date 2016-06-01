@@ -297,14 +297,14 @@ class TestObject extends TestCase
 
     public function testGetAttributes()
     {
-      $data = self::$objects;
-      $a = \JsonApiBuilder::setData([$data['user']])
+        $data = self::$objects;
+        $a = \JsonApiBuilder::setData([$data['user']])
                             ->entity(['id' => 'id', 'type' => 'user']);
-      $response = $a->parse();
+        $response = $a->parse();
 
-      foreach ($response['data'] as $key => $resource) {
-          foreach ($resource as $key => $value) {
-              switch ($key) {
+        foreach ($response['data'] as $key => $resource) {
+            foreach ($resource as $key => $value) {
+                switch ($key) {
               case 'id':
                 $this->assertEquals($value, $data['user']->id);
               break;
@@ -317,43 +317,42 @@ class TestObject extends TestCase
                 }
               break;
             }
-          }
-      }
-
+            }
+        }
     }
 
     public function testRelationshipNotExists()
     {
-      $data = self::$objects;
-      $relationships = ['interests'];
-      try {
-        $a = \JsonApiBuilder::setData([$data['user']])
+        $data = self::$objects;
+        $relationships = ['interests'];
+        try {
+            $a = \JsonApiBuilder::setData([$data['user']])
                               ->entity(['id' => 'id', 'type' => 'user'])
                               ->relationships($relationships);
-        $response = $a->parse();
-      } catch (\Exception $e) {
-          $this->assertEquals($e->getCode(), 500);
-          $this->assertEquals($e->getMessage(), "Relationship [interests] does not exists.");
-      }
+            $response = $a->parse();
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getCode(), 500);
+            $this->assertEquals($e->getMessage(), "Relationship [interests] does not exists.");
+        }
     }
 
     public function testRelationshipIsObject()
     {
-      $user = new stdClass;
-      $user->id = 1;
-      $user->name = 'Le Duc';
-      $user->gender = 'male';
-      $user->email = 'Lee.duc55@gmail.com';
+        $user = new stdClass;
+        $user->id = 1;
+        $user->name = 'Le Duc';
+        $user->gender = 'male';
+        $user->email = 'Lee.duc55@gmail.com';
 
-      $user->profile = new stdClass;
-      $user->profile->id = 1;
-      $user->profile->address = '172 Cu Chinh Lan';
-      $user->profile->city = 'Da Nang';
-      $user->profile->country = 'Viet Nam';
-      $user->profile->phone = '01266691391';
+        $user->profile = new stdClass;
+        $user->profile->id = 1;
+        $user->profile->address = '172 Cu Chinh Lan';
+        $user->profile->city = 'Da Nang';
+        $user->profile->country = 'Viet Nam';
+        $user->profile->phone = '01266691391';
 
-      $relationships = ['profile'];
-      $a = \JsonApiBuilder::setData($user)
+        $relationships = ['profile'];
+        $a = \JsonApiBuilder::setData($user)
                             ->entity([
                               'id' => 'id',
                               'type' => 'user',
@@ -364,23 +363,25 @@ class TestObject extends TestCase
                               ],
                               'relationships' => [
                                 'profile' => [
-                                  'id' => 'id',
-                                  'type' => 'profile',
-                                  'attributes' => [
-                                      'address' => 'address',
-                                      'city' => 'city',
-                                      'phone' => 'phone',
-                                      'country' => 'country'
+                                  'partial' => [
+                                    'id' => 'id',
+                                    'type' => 'profile',
+                                    'attributes' => [
+                                        'address' => 'address',
+                                        'city' => 'city',
+                                        'phone' => 'phone',
+                                        'country' => 'country'
+                                    ]
                                   ]
-                                ],
+                                ]
                               ]
                             ])
                             ->relationships($relationships)
                             ->included($relationships);
-      $response = $a->parse();
+        $response = $a->parse();
 
-      foreach ($response['data'] as $key => $value) {
-          switch ($key) {
+        foreach ($response['data'] as $key => $value) {
+            switch ($key) {
           case 'id':
           $this->assertEquals($value, $user->id);
           break;
@@ -400,25 +401,25 @@ class TestObject extends TestCase
           }
           break;
         }
-      }
+        }
 
-      foreach ($relationships as $ele) {
-          foreach ($response['included'] as $k => $v) {
-              $type = $v['type'];
-              $resources = [];
+        foreach ($relationships as $ele) {
+            foreach ($response['included'] as $k => $v) {
+                $type = $v['type'];
+                $resources = [];
 
-              if (strpos($ele, $type) === false) {
-                  continue;
-              }
+                if (strpos($ele, $type) === false) {
+                    continue;
+                }
 
-              if (isset($user->$ele)) {
-                  $resources[] = (array) $user->$ele;
-              }
+                if (isset($user->$ele)) {
+                    $resources[] = (array) $user->$ele;
+                }
 
-              $list_ids = array_column($resources, 'id');
-              foreach ($v as $key => $value) {
-                  $resource = $resources[array_search($v['id'], $list_ids)];
-                  switch ($key) {
+                $list_ids = array_column($resources, 'id');
+                foreach ($v as $key => $value) {
+                    $resource = $resources[array_search($v['id'], $list_ids)];
+                    switch ($key) {
                     case 'id':
                       $this->assertEquals($value, $resource['id']);
                       break;
@@ -431,44 +432,43 @@ class TestObject extends TestCase
                       }
                       break;
                   }
-              }
-          }
-      }
-
+                }
+            }
+        }
     }
 
     public function testIncludeNotExists()
     {
-      $data = self::$objects;
-      try {
-        $a = \JsonApiBuilder::setData([$data['user']])
+        $data = self::$objects;
+        try {
+            $a = \JsonApiBuilder::setData([$data['user']])
                             ->entity('auth.show')
                             ->relationships(['comments', 'posts'])
                             ->included(['interests']);
-      } catch (\Exception $e) {
-          $this->assertEquals($e->getCode(), 500);
-          $this->assertEquals($e->getMessage(), "Included [interests] data does not exists.");
-      }
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getCode(), 500);
+            $this->assertEquals($e->getMessage(), "Included [interests] data does not exists.");
+        }
     }
 
     public function testViewNotFound()
     {
-      $data = self::$objects;
-      try {
-        $a = \JsonApiBuilder::setData([$data['user']])
+        $data = self::$objects;
+        try {
+            $a = \JsonApiBuilder::setData([$data['user']])
                             ->entity('auth.show1')
                             ->relationships(['comments', 'posts'])
                             ->included(['interests']);
-      } catch (\Exception $e) {
-          $this->assertEquals($e->getCode(), 404);
-          $this->assertEquals($e->getMessage(), "View [auth.show1] not found.");
-      }
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getCode(), 404);
+            $this->assertEquals($e->getMessage(), "View [auth.show1] not found.");
+        }
     }
 
     public function testPartialWrongSyntax()
     {
-      $data = self::$objects;
-      $a = \JsonApiBuilder::setData([$data['user']])
+        $data = self::$objects;
+        $a = \JsonApiBuilder::setData([$data['user']])
                           ->entity([
                             'id' => 'id',
                             'type' => 'user',
@@ -479,16 +479,17 @@ class TestObject extends TestCase
                             ],
                             'relationships' => [
                               'profile' => 'profile.show',
-                              'comments' => 'partial:comments.show'
+                              'comments' => [
+                                  'partial' => 'comments.show'
+                              ]
                             ]
                           ])->relationships(['comments'])
                           ->included(['comments']);
-      $response = $a->parse();
+        $response = $a->parse();
 
-      foreach ($response['data'][0]['relationships'] as $key => $value) {
-          $this->assertTrue($key != 'profile');
-      }
-
+        foreach ($response['data'][0]['relationships'] as $key => $value) {
+            $this->assertTrue($key != 'profile');
+        }
     }
 }
 
@@ -528,6 +529,26 @@ class User
           'email' => $this->email,
           'gender' => $this->gender
         ];
+    }
+
+    public function perPage()
+    {
+        return 10;
+    }
+
+    public function appends($params)
+    {
+        return $this;
+    }
+
+    public function url($id)
+    {
+        return 'examlple.com/' . $id;
+    }
+
+    public function lastPage()
+    {
+        return 10;
     }
 
     public function previousPageUrl()

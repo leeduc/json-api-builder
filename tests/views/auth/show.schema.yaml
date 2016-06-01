@@ -4,5 +4,15 @@ attributes:
   name: name
   email: email
 relationships:
-  posts: partial:posts.show
-  comments: partial:comments.show
+  posts:
+    partial: posts.show
+    links:
+      self: get_user
+      related: get_user
+  comments:
+    partial: comments.show
+    links:
+      self: get_user
+      related: get_user
+links:
+  self: get_user

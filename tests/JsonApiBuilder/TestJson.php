@@ -218,15 +218,15 @@ class TestJson extends TestCase
               break;
             case 'relationships':
               foreach ($value as $k => $v) {
-                    foreach ($v['data'] as $k1 => $v1) {
-                        $rel = $data['user']->$k;
-                        foreach ($rel as $k2 => $v2) {
-                            $rel[$k2] = (array) $v2;
-                        }
+                  foreach ($v['data'] as $k1 => $v1) {
+                      $rel = $data['user']->$k;
+                      foreach ($rel as $k2 => $v2) {
+                          $rel[$k2] = (array) $v2;
+                      }
 
-                        $this->assertTrue(array_search($v1['id'], array_column($rel, 'id')) !== false);
-                    }
-                }
+                      $this->assertTrue(array_search($v1['id'], array_column($rel, 'id')) !== false);
+                  }
+              }
                 break;
               }
             }
@@ -270,6 +270,44 @@ class TestJson extends TestCase
         }
     }
 
+    public function testPaginationPaginationClass()
+    {
+        $data = self::$objects;
+        $relationships = ['comments', 'posts'];
+        $a = \JsonApiBuilder::setData([$data['user']])
+                            ->entity('auth.show')
+                            ->relationships($relationships)
+                            ->included(['posts', 'comments' => ['post_id', 'content']]);
+        $response = $a->parse();
+
+        $parse = \Mockery::mock('Leeduc\JsonApiBuilder\JsonApiBuilder\Parse[checkPaginationObject]', [$this->app->request, $this->app->view, $response, $a->getData()]);
+        $parse->shouldReceive('checkPaginationObject')->andReturn(true);
+
+        \JsonApiBuilder::shouldReceive('json')->andReturn($parse);
+        \JsonApiBuilder::shouldReceive('getPath')->andReturn(__DIR__ . '/../views/auth/show.schema.yaml');
+        \JsonApiBuilder::getFacadeRoot()->makePartial();
+
+        $a = \JsonApiBuilder::setData($data['user'])
+                      ->entity('auth.show')
+                      ->json()
+                      ->pagination()
+                      ->response();
+
+        $a = json_decode($a->content(), true);
+
+        $compare = [
+          "self" => "http://localhost",
+             "first" => "examlple.com/1",
+             "prev" => "example.com/previous",
+             "next" => "example.com/next",
+             "last" => "examlple.com/10"
+        ];
+
+        foreach ($a['links'] as $key => $value) {
+            $this->assertEquals($compare[$key], $value);
+        }
+    }
+
     public function testSetPagination()
     {
         $data = [
@@ -288,6 +326,22 @@ class TestJson extends TestCase
             $this->assertEquals($data[$key], $value);
         }
     }
+
+    public function testSetJsonapi()
+    {
+        $data = [
+          'version' => '1.0',
+        ];
+
+        $a = \JsonApiBuilder::json($data)
+                              ->response();
+
+        $res = json_decode($a->content(), true);
+        foreach ($res['jsonapi'] as $key => $value) {
+            $this->assertEquals($data[$key], $value);
+        }
+    }
+
 
     public function testWith()
     {
