@@ -118,7 +118,7 @@ $builder = \JsonApiBuilder::setData($data)
                             ]
                         ]
                     ], function($data) {
-                        $data['id'] = 100;
+                        // custom entity data
                         return $data;
                     })
                     ->relationship(['comments'])
