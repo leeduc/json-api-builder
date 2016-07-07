@@ -41,27 +41,37 @@ Next, also in the app.php config file, under the aliases array, you may want to 
 
 Build Schema in folder views of resource
 
-`posts.view` = `app\resources\views\posts\show.schema.yaml`
+`posts.view` = `app\resources\views\posts\show.schema.php`
 
-``` yaml
-id: id
-type: user
-attributes:
-  name: name
-  email: email
-relationships:
-  posts:
-    partial: posts.show # Yaml view path
-    links:
-      self: get_user # Route name
-      related: get_user # Route name
-  comments:
-    partial: comments.show # Yaml view path
-    links:
-      self: get_user # Route name
-      related: get_user # Route name
-links:
-  self: get_user # Route name
+``` php
+return [
+  'id' => $data->id,
+  'type' => class_basename($data),
+  'attributes' => [
+    'name' => $data->name,
+    'email' => $data->email
+  ],
+  'relationships' => [
+    'posts' => [
+      'partial' => 'posts.show',
+      'links' => [
+        'self' => route('get_user', ['id' => $data->id]) . '/relationships/posts',
+        'related' => route('get_user', ['id' => $data->id]) . '/posts'
+      ]
+    ],
+    'comments' => [
+      'partial' => 'comments.show',
+      'links' => [
+        'self' => route('get_user', ['id' => $data->id]) . '/relationships/comments',
+        'related' => route('get_user', ['id' => $data->id]) . '/comments'
+      ]
+    ]
+  ],
+  'links' => [
+    'self' => route('get_user', ['id' => $data->id])
+  ]
+];
+
 ```
 
 Build Array
@@ -85,39 +95,7 @@ Build Json
 
 ``` php
 $builder = \JsonApiBuilder::setData($data)
-                    ->entity([
-                        'id' => 'id',
-                        'type' => 'type',
-                        'attributes' => [
-                            'name' => 'name'
-                            'email' => 'email'
-                        ],
-                        'relationships' => [
-                            'posts' => [
-                              'partial' => 'posts.show',
-                              'links' => [
-                                'self' => 'route_name',
-                                'related' => 'route_name'
-                              ],
-                            ],
-                            'profile' => [
-                              'partial' => [
-                                'id' => 'id',
-                                'type' => 'profile',
-                                'attributes' => [
-                                    'address' => 'address',
-                                    'city' => 'city',
-                                    'phone' => 'phone',
-                                    'country' => 'country'
-                                ]
-                              ],
-                              'links' => [
-                                'self' => 'route_name',
-                                'related' => 'route_name'
-                              ],
-                            ]
-                        ]
-                    ], function($data) {
+                    ->entity('package::view.path.name', function($data) {
                         // custom entity data
                         return $data;
                     })
