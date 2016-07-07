@@ -1,6 +1,8 @@
 <?php
 class TestCase extends Orchestra\Testbench\TestCase
 {
+    public static $objects = array();
+
     protected function getPackageProviders($app)
     {
         return array('Leeduc\JsonApiBuilder\JsonApiBuilderServiceProvider');
@@ -17,10 +19,6 @@ class TestCase extends Orchestra\Testbench\TestCase
     {
         parent::setUp();
         View::addLocation(__DIR__ . '/../views');
-        Route::get('test', function () {
-            echo \JsonApiBuilder::json()->pagination(['next' => 123213, 'custom' => 'abc'])->meta(['version' => '1.0'])->response();
-            die;
-        });
 
         Route::get('user/{id}', ['as' => 'get_user', function ($id) {
             return $id;
@@ -30,9 +28,44 @@ class TestCase extends Orchestra\Testbench\TestCase
             return $id;
         }]);
 
-        Route::get('comment/{id}', ['as' => 'get_post', function ($id) {
+        Route::get('post/{id}', ['as' => 'get_post', function ($id) {
             return $id;
         }]);
+    }
+
+    public static function setUpBeforeClass()
+    {
+        $faker = Faker\Factory::create();
+
+        $user = new User();
+        $user->id = 1;
+        $user->name = $faker->name;
+        $user->gender = 'male';
+        $user->email = $faker->email;
+        $user->password = $faker->md5;
+
+        $comments = [];
+        for ($i=0; $i < 10; $i++) {
+            $comments[$i] = new stdClass();
+            $comments[$i]->id = $i;
+            $comments[$i]->user_id = 1;
+            $comments[$i]->user = $user;
+            $comments[$i]->post_id = rand(1, 100);
+            $comments[$i]->content = $faker->sentence($nbWords = 6, $variableNbWords = true);
+        }
+
+        $posts = [];
+        for ($i=0; $i < 10; $i++) {
+            $posts[$i] = new Posts();
+            $posts[$i]->id = $i;
+            $posts[$i]->user_id = 1;
+            $posts[$i]->title = $faker->sentence($nbWords = 6, $variableNbWords = true);
+            $posts[$i]->content = $faker->text($maxNbChars = 200);
+        }
+
+        $user->comments = $comments;
+        $user->posts = $posts;
+        self::$objects['user'] = $user;
     }
 
     public function testExample()

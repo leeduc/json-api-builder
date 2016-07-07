@@ -2,42 +2,6 @@
 
 class TestJson extends TestCase
 {
-    public static $objects = array();
-
-    public static function setUpBeforeClass()
-    {
-        $faker = Faker\Factory::create();
-
-        $user = new User();
-        $user->id = 1;
-        $user->name = $faker->name;
-        $user->gender = 'male';
-        $user->email = $faker->email;
-        $user->password = $faker->md5;
-
-        $comments = [];
-        for ($i=0; $i < 10; $i++) {
-            $comments[$i] = new stdClass();
-            $comments[$i]->id = $i;
-            $comments[$i]->user_id = 1;
-            $comments[$i]->post_id = rand(1, 100);
-            $comments[$i]->content = $faker->sentence($nbWords = 6, $variableNbWords = true);
-        }
-
-        $posts = [];
-        for ($i=0; $i < 10; $i++) {
-            $posts[$i] = new Posts();
-            $posts[$i]->id = $i;
-            $posts[$i]->user_id = 1;
-            $posts[$i]->title = $faker->sentence($nbWords = 6, $variableNbWords = true);
-            $posts[$i]->content = $faker->text($maxNbChars = 200);
-        }
-
-        $user->comments = $comments;
-        $user->posts = $posts;
-        self::$objects['user'] = $user;
-    }
-
     public function testSetData()
     {
         $data = self::$objects;
@@ -57,10 +21,11 @@ class TestJson extends TestCase
     {
         $data = self::$objects;
         $relationships = ['comments', 'posts'];
+
         $a = \JsonApiBuilder::setData($data['user'])
                           ->entity('auth.show')
                           ->relationships($relationships)
-                          ->included(['posts', 'comments' => ['post_id', 'content']])
+                          ->included($relationships)
                           ->json()
                           ->response();
 
@@ -188,17 +153,16 @@ class TestJson extends TestCase
         $response = $a->parse();
 
         $parse = \Mockery::mock('Leeduc\JsonApiBuilder\JsonApiBuilder\Parse[checkPaginationObject]', [$this->app->request, $this->app->view, $response, $a->getData()]);
-        $parse->shouldReceive('checkPaginationObject')->andReturn(true);
+        $parse->shouldReceive('checkPaginationObject')->once()->andReturn(true);
 
-        \JsonApiBuilder::shouldReceive('json')->andReturn($parse);
-        \JsonApiBuilder::shouldReceive('getPath')->andReturn(__DIR__ . '/../views/auth/show.schema.yaml');
-        \JsonApiBuilder::getFacadeRoot()->makePartial();
+        $parse1 = \Mockery::mock('Leeduc\JsonApiBuilder\JsonApiBuilder\Generate[json]', [$this->app->request, $this->app->view]);
+        $parse1->shouldReceive('json')->once()->andReturn($parse);
 
-        $a = \JsonApiBuilder::setData($data['user'])
-                      ->entity('auth.show')
-                      ->json()
-                      ->pagination()
-                      ->response();
+        $a = $parse1->setData($data['user'])
+                    ->entity('auth.show')
+                    ->json()
+                    ->pagination()
+                    ->response();
 
         $a = json_decode($a->content(), true);
 
@@ -283,15 +247,14 @@ class TestJson extends TestCase
         $parse = \Mockery::mock('Leeduc\JsonApiBuilder\JsonApiBuilder\Parse[checkPaginationObject]', [$this->app->request, $this->app->view, $response, $a->getData()]);
         $parse->shouldReceive('checkPaginationObject')->andReturn(true);
 
-        \JsonApiBuilder::shouldReceive('json')->andReturn($parse);
-        \JsonApiBuilder::shouldReceive('getPath')->andReturn(__DIR__ . '/../views/auth/show.schema.yaml');
-        \JsonApiBuilder::getFacadeRoot()->makePartial();
+        $parse1 = \Mockery::mock('Leeduc\JsonApiBuilder\JsonApiBuilder\Generate[json]', [$this->app->request, $this->app->view]);
+        $parse1->shouldReceive('json')->once()->andReturn($parse);
 
-        $a = \JsonApiBuilder::setData($data['user'])
-                      ->entity('auth.show')
-                      ->json()
-                      ->pagination()
-                      ->response();
+        $a = $parse1->setData($data['user'])
+                    ->entity('auth.show')
+                    ->json()
+                    ->pagination()
+                    ->response();
 
         $a = json_decode($a->content(), true);
 
