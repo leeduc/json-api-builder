@@ -300,106 +300,108 @@ class TestObject extends TestCase
         }
     }
 
-    // public function testRelationshipIsObject()
-    // {
-    //     $user = new stdClass;
-    //     $user->id = 1;
-    //     $user->name = 'Le Duc';
-    //     $user->gender = 'male';
-    //     $user->email = 'Lee.duc55@gmail.com';
-    //
-    //     $user->profile = new stdClass;
-    //     $user->profile->id = 1;
-    //     $user->profile->address = '172 Cu Chinh Lan';
-    //     $user->profile->city = 'Da Nang';
-    //     $user->profile->country = 'Viet Nam';
-    //     $user->profile->phone = '01266691391';
-    //
-    //     $relationships = ['profile'];
-    //     $a = \JsonApiBuilder::setData($user)
-    //                         ->entity([
-    //                           'id' => 'id',
-    //                           'type' => 'user',
-    //                           'attributes' => [
-    //                               'name' => 'name',
-    //                               'gender' => 'gender',
-    //                               'email' => 'email'
-    //                           ],
-    //                           'relationships' => [
-    //                             'profile' => [
-    //                               'partial' => [
-    //                                 'id' => 'id',
-    //                                 'type' => 'profile',
-    //                                 'attributes' => [
-    //                                     'address' => 'address',
-    //                                     'city' => 'city',
-    //                                     'phone' => 'phone',
-    //                                     'country' => 'country'
-    //                                 ]
-    //                               ]
-    //                             ]
-    //                           ]
-    //                         ])
-    //                         ->relationships($relationships)
-    //                         ->included($relationships);
-    //     $response = $a->parse();
-    //
-    //     foreach ($response['data'] as $key => $value) {
-    //         switch ($key) {
-    //       case 'id':
-    //       $this->assertEquals($value, $user->id);
-    //       break;
-    //       case 'type':
-    //       $this->assertEquals($value, 'user');
-    //       break;
-    //       case 'attributes':
-    //       foreach ($value as $k => $v) {
-    //           $this->assertEquals($v, $user->$k);
-    //       }
-    //       break;
-    //       case 'relationships':
-    //       foreach ($value as $k => $v) {
-    //           foreach ($v['data'] as $k1 => $v1) {
-    //               $this->assertEquals($v1['id'], $user->profile->id);
-    //           }
-    //       }
-    //       break;
-    //     }
-    //     }
-    //
-    //     foreach ($relationships as $ele) {
-    //         foreach ($response['included'] as $k => $v) {
-    //             $type = $v['type'];
-    //             $resources = [];
-    //
-    //             if (strpos($ele, $type) === false) {
-    //                 continue;
-    //             }
-    //
-    //             if (isset($user->$ele)) {
-    //                 $resources[] = (array) $user->$ele;
-    //             }
-    //
-    //             $list_ids = array_column($resources, 'id');
-    //             foreach ($v as $key => $value) {
-    //                 $resource = $resources[array_search($v['id'], $list_ids)];
-    //                 switch ($key) {
-    //                 case 'id':
-    //                   $this->assertEquals($value, $resource['id']);
-    //                   break;
-    //                 case 'type':
-    //                   $this->assertEquals($value, $type);
-    //                   break;
-    //                 case 'attributes':
-    //                   foreach ($value as $k1 => $v1) {
-    //                       $this->assertEquals($v1, $resource[$k1]);
-    //                   }
-    //                   break;
-    //               }
-    //             }
-    //         }
-    //     }
-    // }
+    public function testRelationshipIsObject()
+    {
+        $user = new stdClass;
+        $user->id = 1;
+        $user->name = 'Le Duc';
+        $user->gender = 'male';
+        $user->email = 'Lee.duc55@gmail.com';
+
+        $user->profile = new stdClass;
+        $user->profile->id = 1;
+        $user->profile->address = '172 Cu Chinh Lan';
+        $user->profile->city = 'Da Nang';
+        $user->profile->country = 'Viet Nam';
+        $user->profile->phone = '01266691391';
+
+        $relationships = ['profile'];
+        $a = \JsonApiBuilder::setData($user)
+                            ->entity(function ($object) {
+                              return [
+                                'id' => $object->id,
+                                'type' => 'user',
+                                'attributes' => [
+                                    'name' => $object->name,
+                                    'gender' => $object->gender,
+                                    'email' => $object->email
+                                ],
+                                'relationships' => [
+                                  'profile' => [
+                                    'partial' => [
+                                      'id' => $object->profile->id,
+                                      'type' => 'profile',
+                                      'attributes' => [
+                                          'address' => $object->profile->address,
+                                          'city' => $object->profile->city,
+                                          'phone' => $object->profile->phone,
+                                          'country' => $object->profile->country
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ];
+                            })
+                            ->relationships($relationships)
+                            ->included($relationships);
+        $response = $a->parse();
+
+        foreach ($response['data'] as $key => $value) {
+            switch ($key) {
+              case 'id':
+              $this->assertEquals($value, $user->id);
+              break;
+              case 'type':
+              $this->assertEquals($value, 'user');
+              break;
+              case 'attributes':
+              foreach ($value as $k => $v) {
+                  $this->assertEquals($v, $user->$k);
+              }
+              break;
+              case 'relationships':
+              foreach ($value as $k => $v) {
+                  foreach ($v['data'] as $k1 => $v1) {
+                      $this->assertEquals($v1['id'], $user->profile->id);
+                  }
+              }
+              break;
+            }
+        }
+
+        foreach ($relationships as $ele) {
+            foreach ($response['included'] as $k => $v) {
+                $type = $v['type'];
+                $resources = [];
+
+                if (strpos($ele, $type) === false) {
+                    continue;
+                }
+
+                if (isset($user->$ele)) {
+                    $resources[] = (array) $user->$ele;
+                }
+
+                $list_ids = array_column($resources, 'id');
+                foreach ($v as $key => $value) {
+                    $resource = $resources[array_search($v['id'], $list_ids)];
+                    switch ($key) {
+                    case 'id':
+                      $this->assertEquals($value, $resource['id']);
+                      break;
+                    case 'type':
+                      $this->assertEquals($value, $type);
+                      break;
+                    case 'attributes':
+                      foreach ($value as $k1 => $v1) {
+                          $this->assertEquals($v1, $resource[$k1]);
+                      }
+                      break;
+                  }
+                }
+            }
+        }
+    }
 
     public function testIncludeNotExists()
     {
