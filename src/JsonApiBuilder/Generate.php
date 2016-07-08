@@ -65,8 +65,13 @@ class Generate
         $data = [];
         $fields = $schema;
         foreach ($this->source as $k => $element) {
-            if ($schema && !is_array($schema)) {
+            if ($schema && !is_array($schema) && !is_callable($schema)) {
                 $fields = $this->getSchema($schema, $element)->schema;
+            } elseif (is_callable($schema)) {
+                $sch = $schema($element);
+                if ($sch) {
+                    $fields = $sch;
+                }
             }
 
             if (isset($fields['relationships']) && is_array($fields['relationships'])) {
