@@ -2,13 +2,17 @@
 
 All Notable changes to `json-api-builder` will be documented in this file.
 
-## [Unreleased] 2016-07-07
+## [0.1.6] 2016-07-08
+### Add
+- Support callback instance of entity schema
+
+## [0.1.5] 2016-07-07
 ### Add
 - Support php array schema
 ### Remove
 - Unsupported yaml
 
-## [Unreleased] 2016-06-01
+## [0.1.4] 2016-06-01
 ### Add
 - Support define links in schema
 
@@ -27,7 +31,8 @@ All Notable changes to `json-api-builder` will be documented in this file.
 - Support callback override data.
 - Choose field for attributes, relationships, included.
 
-[Unreleased]: https://github.com/leeduc/json-api-builder/compare/v0.1.4...v0.1.5
+[0.1.6]: https://github.com/leeduc/json-api-builder/compare/v0.1.5...v0.1.6
+[0.1.5]: https://github.com/leeduc/json-api-builder/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/leeduc/json-api-builder/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/leeduc/json-api-builder/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/leeduc/json-api-builder/compare/v0.1.1...v0.1.2
